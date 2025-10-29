@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, send_file
 from rembg import remove
 from PIL import Image
-from io import BytesIO #what is that?
+from io import BytesIO
+import os
 
 app = Flask(__name__)
 
@@ -19,14 +20,11 @@ def upload_file():
             img_io = BytesIO()
             output_imge.save(img_io,'PNG')
             img_io.seek(0)
-            return send_file(img_io, mimetype ='image/png', as_attachment=True, download_name='_rmbg.png')
+            return send_file(img_io, mimetype='image/png', as_attachment=True, download_name='_rmbg.png')
         
-
-
-
     return render_template('index.html')
     
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=8000)
-
+    port = int(os.environ.get('PORT', 8000))
+    app.run(host='0.0.0.0', debug=False, port=port)
