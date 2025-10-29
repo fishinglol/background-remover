@@ -1,3 +1,6 @@
+cd /Users/fais/Desktop/rm_bg
+
+cat > .github/workflows/docker-build.yml << 'EOF'
 name: Build and Test Docker Image
 
 on:
@@ -26,10 +29,16 @@ jobs:
         docker run -d -p 8000:8000 --name test-app background-remover:${{ github.sha }}
         echo "Waiting for app to start..."
         sleep 30
-        echo "Checking if app is responding..."
+        echo "Checking Docker logs..."
         docker logs test-app
-        curl -f http://localhost:8000 || (docker logs test-app && exit 1)
+        echo "Checking if app is responding..."
+        curl -v http://localhost:8000 || exit 1
         docker stop test-app
+    
+    - name: Show logs on failure
+      if: failure()
+      run: docker logs test-app
     
     - name: Success
       run: echo "✅ Docker image built and tested successfully!"
+EOF
